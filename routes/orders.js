@@ -1,6 +1,7 @@
 import express from 'express';
 const orderRoute = express.Router();
 import{v4 as uuidv4} from 'uuid'
+import Orders from '../models/order-model.js';
 
 
 // let orders=[
@@ -37,20 +38,50 @@ import{v4 as uuidv4} from 'uuid'
 
 // ]
 
-let orders=[];
+//let orders=[];
 
-orderRoute.get("/",(req,res)=> res.send(orders));
+orderRoute.get("/", async (req,res)=> {
 
-orderRoute.post("/",(req,res)=>{
+try{
+    const _Orders = await Orders.find();
+    res.status(200).json(_Orders);
 
-    let order = req.body;
-    orders.push({...order,orderID: uuidv4()});
-    res.send(orders);
+}
+catch(error){
+    res.status(500).json({message: error.message})
+}
 });
 
-orderRoute.delete("/:orderID",(req,res)=>{
-    let{orderID} =req.params;
-    orders = orders.filter((order)=>order.orderID!=orderID)
-    res.send(orders);} )
 
-export default orderRoute;
+orderRoute.post("/", async (req,res)=>{
+
+    try{
+        const _Orders = await Orders.create(req.body);
+        res.status(201).json(_Orders);
+      }
+    
+      catch(error){
+        res.status(400).json({message: error.message})
+    }
+});
+
+orderRoute.delete("/:orderId", async (req,res)=>{
+    // let{orderID} =req.params;
+    // orders = orders.filter((order)=>order.orderID!=orderID)
+    // //orders.save();
+    // res.send(orders);} )
+try{
+    let orderId = req.params.orderId;
+    let deletedRecord = await Orders.findByIdAndDelete(orderId);
+    let _Orders = await Orders.find();
+
+    res.status(200).json(_Orders);
+}
+catch(error){
+    res.status(400).json({message: error.message})
+}
+
+
+});
+
+export default orderRoute

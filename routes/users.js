@@ -1,7 +1,10 @@
 import express from 'express';
 const userRoute = express.Router();
-import{v4 as uuidv4} from 'uuid'
+//import{v4 as uuidv4} from 'uuid'
+import  Users  from '../models/user-model.js';
+//const Users = require('../models/user-model')
 
+//const User = require('../models/model');
 //mock user data
 // let users= [
 //     { 
@@ -37,28 +40,74 @@ import{v4 as uuidv4} from 'uuid'
 //   STATUS: 'Active'
 // }
 // ]
+// const dataSchema = new mongoose.Schema({
+//   name: {
+//       required: true,
+//       type: String
+//   },
+//   age: {
+//       required: true,
+//       type: Number
+//   }
+// })
 
-// Adding users to our mock database
-let users = [];
-//getting list of users from the mock data
-userRoute.get("/",(req,res)=>{
-  res.send(users);
+//mongoose.model('Data', userSchema)
+
+//Get API
+userRoute.get("/",async (req,res)=>{
+  // res.send(users);
+  try{
+    const _Users = await Users.find();
+    res.status(200).json(_Users)
+}
+catch(error){
+    res.status(500).json({message: error.message})
+}
 })
 
-userRoute.post('/', (req, res) => {
-    let user = req.body;
+//Post API
+userRoute.post('/',  async (req, res) => {
 
-    users.push({ ...user, ID: uuidv4() });
+  try{
+    const _Users = await Users.create(req.body);
+    res.status(201).json(_Users);
+  }
+
+  catch (error) {
+    res.status(400).json({message: error.message})
+}
+
+  
+    /*let user = {...req.body, ID: uuidv4() } ;
+    users.push(user);
+
+    const data = new Model({
+      name: req.body.NAME,
+      age: req.body.MOBILE
+  })
 
     res.send(users);
+
+    try {
+
+      const dataToSave =  data.save();
+      res.status(200).json(user)
+  }
+  catch (error) {
+      res.status(400).json({message: error.message})
+  }*/
 })  
 
-userRoute.delete('/:ID', (req, res) => {
-  let { ID} = req.params;
-
-  users = users.filter((user) => user.ID !== ID)
-
-  res.send(users);
+userRoute.delete('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await Users.findByIdAndDelete(id)
+     const _Users = await Users.find();
+    res.status(200).json(_Users)
+}
+catch (error) {
+    res.status(400).json({ message: error.message })
+}
 });
 
 export default userRoute
