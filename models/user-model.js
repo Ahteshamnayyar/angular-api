@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     //     required: true,
     //     type: Number
     // },
-
+    createdAt: { type: Date, default: Date.now },
+    lastModified: { type: Date, default: Date.now },
     name: {
         required: true,
         type: String

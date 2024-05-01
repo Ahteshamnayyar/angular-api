@@ -20,7 +20,7 @@ let corsOptions = {
 
 const app = express();
 
-const PORT = 5000
+const PORT = 5001
 
 // Access the environment variable DATABASE_URL
 const mongoString = process.env.DATABASE_URL;
